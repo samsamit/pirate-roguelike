@@ -1,5 +1,5 @@
 {
-  "name": "solid-ts",
+  "name": "rogue-pirate",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,15 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "phaser": "^3.70.0",
-    "solid-js": "^1.8.14"
+    "mobx": "^6.12.0",
+    "phaser": "^3.70.0"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.17",
-    "postcss": "^8.4.35",
-    "tailwindcss": "^3.4.1",
     "typescript": "^5.2.2",
-    "vite": "^5.1.0",
-    "vite-plugin-solid": "^2.9.1"
+    "vite": "^5.1.0"
   }
 }

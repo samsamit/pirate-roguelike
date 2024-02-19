@@ -1,6 +1,6 @@
 import MainScene from "./scenes/main.scene"
 
-const gameConfig = {
+const gameConfig: Phaser.Types.Core.GameConfig = {
   parent: "game-canvas",
   canvasStyle: `display: block; width: 100%; height: 100%;`,
   clearBeforeRender: true,
@@ -17,6 +17,6 @@ const gameConfig = {
   },
   scene: [MainScene],
   input: true,
-} as const satisfies Phaser.Types.Core.GameConfig
+}
 
-export default gameConfig
+export default new Phaser.Game(gameConfig)
