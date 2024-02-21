@@ -26,3 +26,10 @@ export const SailColor = {
   white: 38,
   grey: 46,
 }
+
+export interface ShipPhysics {
+  acceleration: number
+  topSpeed: number
+  turnSpeed: number
+  mass: number
+}

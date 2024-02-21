@@ -5,35 +5,43 @@ import {
   sails,
   smallShip,
 } from "../../util/parseShipSprites"
-import { ShipSize, ShipColor, MastColor, SailColor } from "../../types"
+import {
+  ShipSize,
+  ShipColor,
+  MastColor,
+  SailColor,
+  ShipPhysics,
+} from "../../types"
+import { ShipData } from "../../store/player.store"
 
 interface ShipConstructor {
   name: string
   x: number
   y: number
   scene: Phaser.Scene
-  size: ShipSize
-  color: keyof typeof ShipColor
-  mastColor: keyof typeof MastColor
-  sailColor: keyof typeof SailColor
+  shipData: ShipData
 }
 
 export class Ship {
+  private texture: Phaser.Textures.DynamicTexture | null = null
   public sprite: Phaser.Physics.Matter.Sprite
-  private speed = 0.003
-  private maxSpeed = 1
+  private acceleration = 0.003
+  private topSpeed = 1
   private turnSpeed = 0.01
   private previousPosition = { x: 0, y: 0 }
   public deltaPosition = { x: 0, y: 0 }
 
   constructor(private props: ShipConstructor) {
-    const { scene, x, y, name } = props
-    this.updateSprite()
+    const { scene, x, y, name, shipData } = props
+    const {
+      physics: { mass },
+    } = getShipInfo(shipData.size)
+    this.updateShip(shipData)
     this.sprite = scene.matter.add.sprite(x, y, name, undefined, {
       friction: 0.1,
       frictionAir: 0.001,
       frictionStatic: 0,
-      mass: 100,
+      mass,
     })
     this.sprite.setScale(0.5)
   }
@@ -44,10 +52,10 @@ export class Ship {
     const speed = body.speed
 
     if (cursors.up.isDown) {
-      this.sprite.thrust(this.speed)
+      this.sprite.thrust(this.acceleration)
     }
     if (cursors.down.isDown && speed > 0.2) {
-      this.sprite.thrustBack(this.speed)
+      this.sprite.thrustBack(this.acceleration)
     }
 
     // Apply a constant force in the direction the ship is facing
@@ -59,10 +67,10 @@ export class Ship {
     )
 
     // Limit the speed if it exceeds the maximum speed
-    if (speed > this.maxSpeed) {
+    if (speed > this.topSpeed) {
       const angle = Math.atan2(body.velocity.y, body.velocity.x)
-      this.sprite.setVelocityX(this.maxSpeed * Math.cos(angle))
-      this.sprite.setVelocityY(this.maxSpeed * Math.sin(angle))
+      this.sprite.setVelocityX(this.topSpeed * Math.cos(angle))
+      this.sprite.setVelocityY(this.topSpeed * Math.sin(angle))
     }
 
     // Adjust angular velocity based on current speed
@@ -81,35 +89,79 @@ export class Ship {
     this.previousPosition.x = this.sprite.x
     this.previousPosition.y = this.sprite.y
   }
-  updateSprite() {
-    const { scene, name, size, color, mastColor, sailColor } = this.props
-    const { frameHeight, frameWidth, key } = getShipInfo(size)
-    const ship = scene.textures.addDynamicTexture(name, frameWidth, frameHeight)
-    if (!ship) throw Error("Failed adding dynamic texture")
-    ship.setIsSpriteTexture(true)
-    ship.camera.setPosition(frameWidth / 2, frameHeight / 2)
-    ship.stamp(key, ShipColor[color])
-    ship.stamp(mast.key, MastColor[mastColor])
-    ship.stamp(sails.key, SailColor[sailColor], 4, 0)
+  updateShip(shipData: ShipData) {
+    const { scene, name } = this.props
+    const { size, color, mastColor, sailColor } = shipData
+    const {
+      frameHeight,
+      frameWidth,
+      key,
+      physics: { acceleration, mass, topSpeed, turnSpeed },
+    } = getShipInfo(size)
+    if (!this.texture) {
+      this.texture = scene.textures.addDynamicTexture(
+        name,
+        frameWidth,
+        frameHeight
+      )
+    } else {
+      this.texture.clear()
+    }
+    if (!this.texture) throw Error("Cant create texture")
+    this.texture.setIsSpriteTexture(true)
+    this.texture.camera.setPosition(frameWidth / 2, frameHeight / 2)
+    this.texture.stamp(key, ShipColor[color])
+    this.texture.stamp(mast.key, MastColor[mastColor])
+    this.texture.stamp(sails.key, SailColor[sailColor], 4, 0)
+
+    // Update stats
+    this.acceleration = acceleration
+    this.topSpeed = topSpeed
+    this.turnSpeed = turnSpeed
+    if (this.sprite) this.sprite.setMass(mass)
   }
 }
 
-function getShipInfo(size: ShipSize) {
+function getShipInfo(size: ShipSize): {
+  key: string
+  frameHeight: number
+  frameWidth: number
+  physics: ShipPhysics
+} {
   switch (size) {
     case "small": {
       const { key, frameConfig } = smallShip
       const { frameHeight, frameWidth } = frameConfig
-      return { key, frameHeight, frameWidth }
+      const physics: ShipPhysics = {
+        acceleration: 0.003,
+        mass: 100,
+        topSpeed: 1,
+        turnSpeed: 0.01,
+      }
+      return { key, frameHeight, frameWidth, physics }
     }
     case "medium": {
       const { key, frameConfig } = mediumShip
       const { frameHeight, frameWidth } = frameConfig
-      return { key, frameHeight, frameWidth }
+
+      const physics: ShipPhysics = {
+        acceleration: 0.003,
+        mass: 100,
+        topSpeed: 1,
+        turnSpeed: 0.01,
+      }
+      return { key, frameHeight, frameWidth, physics }
     }
     case "large": {
       const { key, frameConfig } = largeShip
       const { frameHeight, frameWidth } = frameConfig
-      return { key, frameHeight, frameWidth }
+      const physics: ShipPhysics = {
+        acceleration: 0.003,
+        mass: 100,
+        topSpeed: 1,
+        turnSpeed: 0.01,
+      }
+      return { key, frameHeight, frameWidth, physics }
     }
   }
 }

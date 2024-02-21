@@ -2,7 +2,7 @@ export const smallShip = {
   key: "small_ship",
   url: "assets/ship/small_ship.png",
   frameConfig: {
-    frameWidth: 64,
+    frameWidth: 63,
     frameHeight: 32,
     startFrame: 0,
     endFrame: 18,

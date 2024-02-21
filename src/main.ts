@@ -1,4 +1,5 @@
 import MainScene from "./scenes/main.scene"
+import phaserReact from "phaser3-react"
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   parent: "game-canvas",
@@ -17,6 +18,18 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   },
   scene: [MainScene],
   input: true,
+  dom: {
+    createContainer: true,
+  },
+  plugins: {
+    global: [
+      {
+        key: "phaser-react",
+        plugin: phaserReact,
+        start: true,
+      },
+    ],
+  },
 }
 
 export default new Phaser.Game(gameConfig)
