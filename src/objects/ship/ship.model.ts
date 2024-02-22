@@ -1,3 +1,12 @@
+import Phaser from "phaser"
+import { ShipData } from "../../store/player.store"
+import {
+  ShipColor,
+  MastColor,
+  SailColor,
+  ShipPhysics,
+  ShipSize,
+} from "../../types"
 import {
   largeShip,
   mast,
@@ -5,92 +14,71 @@ import {
   sails,
   smallShip,
 } from "../../util/parseShipSprites"
-import {
-  ShipSize,
-  ShipColor,
-  MastColor,
-  SailColor,
-  ShipPhysics,
-} from "../../types"
-import { ShipData } from "../../store/player.store"
 
-interface ShipConstructor {
-  name: string
-  x: number
-  y: number
-  scene: Phaser.Scene
-  shipData: ShipData
-}
-
-export class Ship {
-  private texture: Phaser.Textures.DynamicTexture | null = null
-  public sprite: Phaser.Physics.Matter.Sprite
+class Ship extends Phaser.Physics.Matter.Sprite {
   private acceleration = 0.003
   private topSpeed = 1
   private turnSpeed = 0.01
+
   private previousPosition = { x: 0, y: 0 }
   public deltaPosition = { x: 0, y: 0 }
 
-  constructor(private props: ShipConstructor) {
-    const { scene, x, y, name, shipData } = props
-    const {
-      physics: { mass },
-    } = getShipInfo(shipData.size)
-    this.updateShip(shipData)
-    this.sprite = scene.matter.add.sprite(x, y, name, undefined, {
+  constructor(
+    scene: Phaser.Scene,
+    x: number,
+    y: number,
+    private shipName: string
+  ) {
+    super(scene.matter.world, x, y, "shipTexture", undefined, {
       friction: 0.1,
       frictionAir: 0.001,
       frictionStatic: 0,
-      mass,
     })
-    this.sprite.setScale(0.5)
+    this.body
+    // Add ship to the scene and to the physics world
+    scene.add.existing(this)
   }
 
   update(cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
-    // Calculate the current speed of the ship
-    const body = this.sprite.body as MatterJS.BodyType
+    const body = this.body as MatterJS.BodyType
     const speed = body.speed
-
+    // Ship thrust
     if (cursors.up.isDown) {
-      this.sprite.thrust(this.acceleration)
+      this.thrust(this.acceleration)
     }
     if (cursors.down.isDown && speed > 0.2) {
-      this.sprite.thrustBack(this.acceleration)
+      this.thrustBack(this.acceleration)
     }
 
     // Apply a constant force in the direction the ship is facing
-    this.sprite.setVelocityX(
-      speed * Math.cos((this.sprite.angle * Math.PI) / 180)
-    )
-    this.sprite.setVelocityY(
-      speed * Math.sin((this.sprite.angle * Math.PI) / 180)
-    )
+    this.setVelocityX(speed * Math.cos((this.angle * Math.PI) / 180))
+    this.setVelocityY(speed * Math.sin((this.angle * Math.PI) / 180))
 
     // Limit the speed if it exceeds the maximum speed
     if (speed > this.topSpeed) {
       const angle = Math.atan2(body.velocity.y, body.velocity.x)
-      this.sprite.setVelocityX(this.topSpeed * Math.cos(angle))
-      this.sprite.setVelocityY(this.topSpeed * Math.sin(angle))
+      this.setVelocityX(this.topSpeed * Math.cos(angle))
+      this.setVelocityY(this.topSpeed * Math.sin(angle))
     }
 
     // Adjust angular velocity based on current speed
     const turnFactor = Math.min(1, Math.max(0.2, 1 - speed / 10)) // Adjust constants as needed
     if (cursors.left.isDown) {
-      this.sprite.setAngularVelocity(-this.turnSpeed * turnFactor) // Adjust angular velocity as needed
+      this.setAngularVelocity(-this.turnSpeed * turnFactor) // Adjust angular velocity as needed
     } else if (cursors.right.isDown) {
-      this.sprite.setAngularVelocity(this.turnSpeed * turnFactor) // Adjust angular velocity as needed
+      this.setAngularVelocity(this.turnSpeed * turnFactor) // Adjust angular velocity as needed
     } else {
-      this.sprite.setAngularVelocity(0)
+      this.setAngularVelocity(0)
     }
 
     // Update the previous position of the ship
-    this.deltaPosition.x = this.sprite.x - this.previousPosition.x
-    this.deltaPosition.y = this.sprite.y - this.previousPosition.y
-    this.previousPosition.x = this.sprite.x
-    this.previousPosition.y = this.sprite.y
+    this.deltaPosition.x = this.x - this.previousPosition.x
+    this.deltaPosition.y = this.y - this.previousPosition.y
+    this.previousPosition.x = this.x
+    this.previousPosition.y = this.y
   }
+
   updateShip(shipData: ShipData) {
-    const { scene, name } = this.props
     const { size, color, mastColor, sailColor } = shipData
     const {
       frameHeight,
@@ -98,27 +86,51 @@ export class Ship {
       key,
       physics: { acceleration, mass, topSpeed, turnSpeed },
     } = getShipInfo(size)
-    if (!this.texture) {
-      this.texture = scene.textures.addDynamicTexture(
-        name,
-        frameWidth,
-        frameHeight
-      )
-    } else {
-      this.texture.clear()
-    }
-    if (!this.texture) throw Error("Cant create texture")
-    this.texture.setIsSpriteTexture(true)
-    this.texture.camera.setPosition(frameWidth / 2, frameHeight / 2)
-    this.texture.stamp(key, ShipColor[color])
-    this.texture.stamp(mast.key, MastColor[mastColor])
-    this.texture.stamp(sails.key, SailColor[sailColor], 4, 0)
 
-    // Update stats
+    const angle = this.angle
+    const velocity = this.getAngularVelocity()
+
+    // Set the origin to the center of the sprite
+    this.setOrigin(0.5)
+
+    // Store the current position
+    const currentX = this.x
+    const currentY = this.y
+
+    // Recreate the body with the new dimensions
+    this.setBody({
+      width: frameWidth,
+      height: frameHeight,
+    })
+    this.setAngle(angle)
+    this.setAngularVelocity(velocity)
+
+    // Update the position of the sprite
+    this.setPosition(currentX, currentY)
+
+    // Create dynamic texture
+    if (this.texture) this.texture.destroy()
+    const texture = this.scene.textures.addDynamicTexture(
+      this.shipName,
+      this.width,
+      this.height
+    )
+    if (!texture) throw Error("Failed to create ship texture")
+
+    // Update texture
+    texture.setSize(frameWidth, frameHeight)
+    texture.camera.setPosition(frameWidth / 2, frameHeight / 2)
+    texture.stamp(key, ShipColor[color])
+    texture.stamp(mast.key, MastColor[mastColor])
+    texture.stamp(sails.key, SailColor[sailColor], 4, 0)
+
+    //Update physics
     this.acceleration = acceleration
     this.topSpeed = topSpeed
     this.turnSpeed = turnSpeed
-    if (this.sprite) this.sprite.setMass(mass)
+    this.setMass(mass)
+
+    this.setTexture(this.shipName)
   }
 }
 
@@ -165,3 +177,5 @@ function getShipInfo(size: ShipSize): {
     }
   }
 }
+
+export default Ship

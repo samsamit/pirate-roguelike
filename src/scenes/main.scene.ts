@@ -1,14 +1,17 @@
 import { Scene } from "phaser"
-import { Ship } from "../objects/ship/ship.model"
 import { preloadShipSprites } from "../util/parseShipSprites"
 import { autorun } from "mobx"
 import { playerStore } from "../store/player.store"
 import Score from "../components/shipCustomization/ShipCustomization"
+import Ship2 from "../objects/ship/ship.model"
+import Ship from "../objects/ship/ship.model"
 
 class MainScene extends Scene {
-  private declare ship: Ship
+  private declare ship: Ship2
   private declare cursors: Phaser.Types.Input.Keyboard.CursorKeys
   private declare bg: Phaser.GameObjects.TileSprite
+
+  private temp = false
   preload() {
     this.load.image("ship", "assets/ship.png")
     this.load.image("sea", "assets/seafloor.png")
@@ -22,33 +25,31 @@ class MainScene extends Scene {
       .setOrigin(0)
       .setScrollFactor(0, 0)
 
-    const shipData = playerStore.ship
+    this.ship = new Ship(
+      this,
+      this.sys.canvas.width / 2,
+      this.sys.canvas.height / 2,
+      "player"
+    )
 
-    this.ship = new Ship({
-      name: "smallShip",
-      x: this.sys.canvas.width / 2,
-      y: this.sys.canvas.height / 2,
-      scene: this,
-      shipData,
-    })
-
-    this.cameras.main.startFollow(this.ship.sprite)
+    this.cameras.main.startFollow(this.ship)
 
     this.cursors = this.input.keyboard!.createCursorKeys()
     const button = this.add.reactDom(Score, {
       onClick: () => {
-        playerStore.updateShip({ size: "large" })
+        playerStore.updateShip({ size: !this.temp ? "large" : "small" })
+        this.temp = !this.temp
         console.log("Click")
       },
+    })
+
+    autorun(() => {
+      this.ship.updateShip(playerStore.ship)
     })
   }
 
   update(time: number, delta: number) {
     this.ship.update(this.cursors)
-    autorun(() => {
-      this.ship.updateShip(playerStore.ship)
-    })
-
     // Move the background opposite to player's movement
     this.bg.tilePositionX += this.ship.deltaPosition.x
     this.bg.tilePositionY += this.ship.deltaPosition.y
