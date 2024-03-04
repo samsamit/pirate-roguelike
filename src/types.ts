@@ -27,9 +27,29 @@ export const SailColor = {
   grey: 46,
 }
 
-export interface ShipPhysics {
+export interface ShipPhysicsData {
   acceleration: number
-  topSpeed: number
   turnSpeed: number
   mass: number
+  size: Size
+}
+
+export interface Position {
+  x: number
+  y: number
+}
+
+export interface PositionWithAngle {
+  position: Position
+  angle: number
+}
+
+export interface Size {
+  width: number
+  height: number
+}
+
+export interface CollisionRecord {
+  ship: number
+  projectile: number
 }
