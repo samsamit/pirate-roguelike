@@ -5,9 +5,15 @@ import Score from "../components/shipCustomization/ShipCustomization"
 import Player from "../objects/player.model"
 import EnemyHandler from "../objects/enemyHandler.model"
 
+export type WasdKeys = {
+  W: Phaser.Input.Keyboard.Key
+  A: Phaser.Input.Keyboard.Key
+  S: Phaser.Input.Keyboard.Key
+  D: Phaser.Input.Keyboard.Key
+}
 class MainScene extends Scene {
   private declare player: Player
-  private declare cursors: Phaser.Types.Input.Keyboard.CursorKeys
+  private declare cursors: WasdKeys
   private declare background: Phaser.GameObjects.TileSprite
   private declare enemyHandler: EnemyHandler
 
@@ -29,7 +35,7 @@ class MainScene extends Scene {
     this.player = new Player(this)
     this.enemyHandler = new EnemyHandler(this)
 
-    this.cursors = this.input.keyboard!.createCursorKeys()
+    this.cursors = this.input.keyboard!.addKeys("W,S,A,D") as WasdKeys
 
     this.add.reactDom(Score, {
       onClick: () => {

@@ -38,7 +38,6 @@ class Ship {
   }
 
   handleCollision() {
-    console.log("collision")
     this.health = this.health - 10
   }
 

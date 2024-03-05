@@ -3,6 +3,7 @@ import { playerStore } from "../store/player.store"
 import Projectile from "./projectile.model"
 import Ship from "./ship.model"
 import { ShipControl } from "./ship.physics"
+import { WasdKeys } from "../scenes/main.scene"
 
 class Player {
   private ship: Ship
@@ -48,10 +49,7 @@ class Player {
     new Projectile(this.scene, spawnX, spawnY, angleToPointer, 1, 5000)
   }
 
-  update(
-    background: Phaser.GameObjects.TileSprite,
-    controls: Phaser.Types.Input.Keyboard.CursorKeys
-  ) {
+  update(background: Phaser.GameObjects.TileSprite, controls: WasdKeys) {
     this.ship.update(this.getShipControl(controls))
 
     // Move the background opposite to player's movement
@@ -63,9 +61,7 @@ class Player {
     return this.ship.position
   }
 
-  getShipControl(
-    controls: Phaser.Types.Input.Keyboard.CursorKeys
-  ): ShipControl {
+  getShipControl(controls: WasdKeys): ShipControl {
     const shipControl: ShipControl = {
       targetAngleDeg: 0,
       targetSpeed: 0,
@@ -75,18 +71,18 @@ class Player {
     const currentAngleDeg = Phaser.Math.RadToDeg(this.ship.physics.body.angle)
 
     // Calculate target angle based on keyboard input, relative to the current angle
-    if (controls.left?.isDown) {
+    if (controls.A.isDown) {
       shipControl.targetAngleDeg = currentAngleDeg - 90 // Turn left
-    } else if (controls.right?.isDown) {
+    } else if (controls.D.isDown) {
       shipControl.targetAngleDeg = currentAngleDeg + 90 // Turn right
     } else {
       shipControl.targetAngleDeg = currentAngleDeg // Maintain current angle
     }
 
     // Calculate target speed based on keyboard input
-    if (controls.up?.isDown) {
+    if (controls.W.isDown) {
       shipControl.targetSpeed = 1 // Move forward
-    } else if (controls.down?.isDown) {
+    } else if (controls.S.isDown) {
       shipControl.targetSpeed = 0 // Stop
     } else {
       shipControl.targetSpeed = this.ship.physics.body.speed // Maintain current speed
