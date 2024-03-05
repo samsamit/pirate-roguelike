@@ -1,4 +1,4 @@
-import { PositionWithAngle } from "../types"
+import { Position, PositionWithAngle } from "../types"
 import Enemy from "./enemy.model"
 import Ship from "./ship.model"
 
@@ -6,22 +6,36 @@ class EnemyHandler {
   private scene: Phaser.Scene
   private enemies: Enemy[]
   private enemyCounter = 0
+  private spawnRadius = 1200
+
+  private minSpawnInterval = 1000
+  private maxSpawnInterval = 6000
+  private lastSpawnTime = 0
+  private nextSpawnTime = 0
   constructor(scene: Phaser.Scene) {
     this.scene = scene
-
-    this.enemies = [this.getEnemy()]
+    this.enemies = []
+    this.nextSpawnTime = this.getRandomSpawnInterval()
   }
 
-  update(playerPosition: PositionWithAngle) {
-    if (this.enemies.length <= 0) this.enemies.push(this.getEnemy())
+  update(time: number, playerPosition: PositionWithAngle) {
+    if (this.lastSpawnTime === 0) this.lastSpawnTime = time
+    if (time - this.lastSpawnTime > this.nextSpawnTime) {
+      this.enemies.push(this.getEnemy(playerPosition.position))
+      this.lastSpawnTime = time
+      this.nextSpawnTime = this.getRandomSpawnInterval()
+      console.log("Enemy spawned")
+    }
+
     this.enemies.forEach((e) => {
       e.update(playerPosition)
     })
     this.enemies = this.enemies.filter((e) => !e.isDestroyed)
   }
 
-  getEnemy() {
-    const ship = new Ship(this.scene, 0, 0, this.enemyCounter + "ememy")
+  getEnemy(playerPosition: Position) {
+    const { x, y } = this.getEnemyPosition(playerPosition)
+    const ship = new Ship(this.scene, x, y, this.enemyCounter + "ememy")
     this.enemyCounter = this.enemyCounter + 1
     ship.updateShip({
       color: "grey",
@@ -30,6 +44,29 @@ class EnemyHandler {
       size: "medium",
     })
     return new Enemy(ship, 800, 500, 300)
+  }
+
+  getRandomSpawnInterval(): number {
+    // Generate a random spawn interval between min and max interval values
+    return (
+      Math.random() * (this.maxSpawnInterval - this.minSpawnInterval) +
+      this.minSpawnInterval
+    )
+  }
+
+  getEnemyPosition(playerPosition: Position): Position {
+    const { x, y } = playerPosition
+    // Generate a random angle in radians
+    const angle = Math.random() * 2 * Math.PI
+
+    // Generate a random distance within the radius
+    const randomDistance = Math.random() * this.spawnRadius
+
+    // Calculate the new point's coordinates
+    const newX = x + randomDistance * Math.cos(angle)
+    const newY = y + randomDistance * Math.sin(angle)
+
+    return { x: newX, y: newY }
   }
 }
 

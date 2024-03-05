@@ -42,7 +42,7 @@ class MainScene extends Scene {
 
   update(time: number, delta: number) {
     this.player.update(this.background, this.cursors)
-    this.enemyHandler.update(this.player.position)
+    this.enemyHandler.update(time, this.player.position)
   }
 }
 

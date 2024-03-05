@@ -7,9 +7,9 @@ import ShipTexture from "./ship.texture"
 class Ship {
   private texture: ShipTexture
   public physics: ShipPhysics
-
   public health: number = 100
   private healthBar: Phaser.GameObjects.Graphics
+  private isDestroyed = false
 
   //   private shipData: ShipData
 
@@ -28,6 +28,13 @@ class Ship {
       this.handleCollision.bind(this)
     )
     this.healthBar = scene.add.graphics()
+  }
+
+  destroy() {
+    this.texture.texture.destroy()
+    this.physics.destroy()
+    this.healthBar.destroy()
+    this.isDestroyed = true
   }
 
   handleCollision() {
@@ -51,6 +58,7 @@ class Ship {
   }
 
   update(shipControl: ShipControl) {
+    if (this.isDestroyed) return
     this.physics.update(shipControl)
     this.updateHealthBar() // Assuming initial health is 100%
   }

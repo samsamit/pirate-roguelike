@@ -6,6 +6,8 @@ class Enemy {
   private attackRange: number
   private hostileRange: number
   private circleDistance: number // Set distance for circling
+  private maxDistanceFromPlayer = 5000
+  public isDestroyed: boolean = false
 
   constructor(
     ship: Ship,
@@ -19,11 +21,13 @@ class Enemy {
     this.circleDistance = circleDistance
   }
 
-  get isDestroyed() {
-    return this.ship.health <= 0
-  }
-
   update(playerPosition: PositionWithAngle) {
+    if (this.ship.health < 0) {
+      this.ship.destroy()
+      this.isDestroyed = true
+      return
+    }
+
     const { position, angle } = this.ship.position
     // Calculate the distance between the enemy and the player's ship
     const distance = Phaser.Math.Distance.Between(
@@ -38,7 +42,11 @@ class Enemy {
       playerPosition.position.x,
       playerPosition.position.y
     )
-
+    if (distance >= this.maxDistanceFromPlayer) {
+      this.ship.destroy()
+      this.isDestroyed = true
+      return
+    }
     if (distance <= this.attackRange) {
       // Calculate the angle for circling
       const circleAngle = angleToPlayer + Math.PI / 2
