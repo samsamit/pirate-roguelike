@@ -1,6 +1,7 @@
 import { ShipData } from "../store/player.store"
 import { Position, PositionWithAngle, ShipPhysicsData, Size } from "../types"
 import { largeShip, mediumShip, smallShip } from "../util/parseShipSprites"
+import Cannon from "./cannon.model"
 import ShipPhysics, { ShipControl } from "./ship.physics"
 import ShipTexture from "./ship.texture"
 
@@ -10,6 +11,7 @@ class Ship {
   public health: number = 100
   private healthBar: Phaser.GameObjects.Graphics
   private isDestroyed = false
+  private cannons: Cannon[] = []
 
   //   private shipData: ShipData
 
@@ -19,6 +21,7 @@ class Ship {
     y: number,
     shipName: string // shipData: ShipData
   ) {
+    this.cannons.push(...[new Cannon(scene, { x: 0, y: 0 }, shipName)])
     this.texture = new ShipTexture(scene, shipName)
     this.physics = new ShipPhysics(
       scene,
@@ -28,6 +31,10 @@ class Ship {
       this.handleCollision.bind(this)
     )
     this.healthBar = scene.add.graphics()
+  }
+
+  shoot() {
+    this.cannons.forEach((c) => c.shoot())
   }
 
   destroy() {
@@ -60,6 +67,9 @@ class Ship {
     if (this.isDestroyed) return
     this.physics.update(shipControl)
     this.updateHealthBar() // Assuming initial health is 100%
+    this.cannons[0].setScale(3)
+    this.cannons[0].setDepth(300)
+    this.cannons[0].setPosition(this.physics.x + 10, this.physics.y)
   }
 
   updateShip(shipData: ShipData) {

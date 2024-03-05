@@ -46,7 +46,11 @@ class Player {
     const spawnY = position.y + shipLength * Math.sin(angleToPointer)
 
     // Create a new projectile at the calculated spawn position and adjusted angle
-    new Projectile(this.scene, spawnX, spawnY, angleToPointer, 1, 5000)
+    this.ship.shoot()
+    setTimeout(
+      () => new Projectile(this.scene, spawnX, spawnY, angleToPointer, 1, 5000),
+      200
+    )
   }
 
   update(background: Phaser.GameObjects.TileSprite, controls: WasdKeys) {

@@ -20,7 +20,6 @@ class MainScene extends Scene {
   private temp = false
 
   preload() {
-    this.load.image("ship", "assets/ship.png")
     this.load.image("sea", "assets/seafloor.png")
     this.load.image("projectile", "assets/ship/cannon_ball.png")
     preloadShipSprites(this)
