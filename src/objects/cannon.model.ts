@@ -1,29 +1,15 @@
 import { Position, PositionWithAngle, Side } from "../types"
+import { GlobalAnimations } from "../util/animations"
 import { smallCannon } from "../util/parseShipSprites"
 import Projectile from "./projectile.model"
 
 class Cannon extends Phaser.GameObjects.Sprite {
-  private animKey: string
   public side: Side = "left"
   private cooldown = 1000
   private lastShot = 0
-  constructor(
-    scene: Phaser.Scene,
-    { x, y }: Position,
-    shipName: string,
-    side: Side
-  ) {
+  constructor(scene: Phaser.Scene, { x, y }: Position, side: Side) {
     super(scene, x, y, smallCannon.key, 0)
-    this.animKey = shipName + "_cannon_anim_"
     this.side = side
-    scene.anims.create({
-      key: this.animKey,
-      frames: scene.anims.generateFrameNames(smallCannon.key, {
-        frames: [0, 1, 2, 0],
-      }),
-      frameRate: 10,
-      repeat: 0,
-    })
 
     scene.add.existing(this)
   }
@@ -73,7 +59,7 @@ class Cannon extends Phaser.GameObjects.Sprite {
     )
 
     // Trigger animation
-    this.play(this.animKey)
+    this.play(GlobalAnimations.smallCannon)
   }
 }
 

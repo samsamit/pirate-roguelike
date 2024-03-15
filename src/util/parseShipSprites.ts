@@ -86,6 +86,17 @@ export const smallCannon = {
   },
 } as const satisfies Phaser.Types.Loader.FileTypes.SpriteSheetFileConfig
 
+export const explosion = {
+  key: "explosion",
+  url: "assets/ship/explosion.png",
+  frameConfig: {
+    frameWidth: 16,
+    frameHeight: 16,
+    startFrame: 0,
+    endFrame: 7,
+  },
+} as const satisfies Phaser.Types.Loader.FileTypes.SpriteSheetFileConfig
+
 export const shipsSprites = [
   smallShip,
   mediumShip,
@@ -95,6 +106,7 @@ export const shipsSprites = [
   smallSails,
   cannons,
   smallCannon,
+  explosion,
 ]
 export function preloadShipSprites(scene: Phaser.Scene) {
   shipsSprites.forEach((sprite) => scene.load.spritesheet(sprite))

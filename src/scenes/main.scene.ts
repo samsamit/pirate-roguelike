@@ -6,6 +6,7 @@ import Score, {
 } from "../components/shipCustomization/ShipCustomization"
 import Player from "../objects/player.model"
 import EnemyHandler from "../objects/enemyHandler.model"
+import { initGlobalAnimations } from "../util/animations"
 
 export type WasdKeys = {
   W: Phaser.Input.Keyboard.Key
@@ -26,6 +27,7 @@ class MainScene extends Scene {
   }
 
   create() {
+    initGlobalAnimations(this)
     this.background = this.add
       .tileSprite(0, 0, this.sys.canvas.width, this.sys.canvas.height, "sea")
       .setOrigin(0)
