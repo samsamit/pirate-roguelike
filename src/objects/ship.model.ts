@@ -83,13 +83,17 @@ class Ship {
     if (this.isDestroyed) return
     this.physics.update(shipControl)
     this.updateHealthBar() // Assuming initial health is 100%
-    this.cannonContainer.update(this.position, this.physics.size)
+    this.cannonContainer.update(this.position)
   }
 
   updateShip(shipData: ShipData) {
     const { baseTextureKey, physicsData } = this.getShipData(shipData)
     this.texture.build(shipData, physicsData.size, baseTextureKey)
     this.physics.updateBody(physicsData)
+    this.cannonContainer.updateCannons(
+      physicsData.size,
+      physicsData.centerOffset
+    )
   }
 
   updateHealthBar() {
@@ -139,6 +143,7 @@ class Ship {
               width: smallShip.frameConfig.frameWidth,
               height: smallShip.frameConfig.frameHeight,
             },
+            centerOffset: 5,
           },
           baseTextureKey: smallShip.key,
         }
@@ -152,6 +157,7 @@ class Ship {
               width: mediumShip.frameConfig.frameWidth,
               height: mediumShip.frameConfig.frameHeight,
             },
+            centerOffset: 5,
           },
           baseTextureKey: mediumShip.key,
         }
@@ -165,6 +171,7 @@ class Ship {
               width: largeShip.frameConfig.frameWidth,
               height: largeShip.frameConfig.frameHeight,
             },
+            centerOffset: 15,
           },
           baseTextureKey: largeShip.key,
         }

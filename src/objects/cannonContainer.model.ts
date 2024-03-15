@@ -15,7 +15,12 @@ class CannonContainer extends Phaser.GameObjects.Container {
     scene.add.existing(this)
   }
 
-  update(shipPosition: PositionWithAngle, shipSize: Size) {
+  update(shipPosition: PositionWithAngle) {
+    this.setPosition(shipPosition.position.x, shipPosition.position.y)
+    this.setAngle(shipPosition.angle)
+  }
+
+  updateCannons(shipSize: Size, centerOffset: number) {
     const leftSideCannons = this.cannons.filter((c) => c.side === "left")
     const rightSideCannons = this.cannons.filter((c) => c.side === "right")
 
@@ -29,14 +34,12 @@ class CannonContainer extends Phaser.GameObjects.Container {
         const cannonX =
           cannonXOffset - ((cannons.length - 1) * cannon.width) / 2
         cannon.setAngle(-90 * sideMultipler)
-        cannon.setPosition(cannonX, cannonY)
+        cannon.setPosition(cannonX - centerOffset, cannonY)
       })
     }
 
     setupCannons("left", leftSideCannons)
     setupCannons("right", rightSideCannons)
-    this.setPosition(shipPosition.position.x, shipPosition.position.y)
-    this.setAngle(shipPosition.angle)
   }
 }
 

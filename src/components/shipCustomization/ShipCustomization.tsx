@@ -1,11 +1,17 @@
 import React from "react"
 import { ShipSize } from "../../types"
 
-interface IScore {
-  onClick: () => void
+export interface IScore {
+  onClick: (size: ShipSize) => void
 }
 function Score(props: IScore) {
-  return <button onClick={props.onClick}>Change ship size</button>
+  return (
+    <div>
+      <button onClick={() => props.onClick("small")}>Small</button>
+      <button onClick={() => props.onClick("medium")}>Medium</button>
+      <button onClick={() => props.onClick("large")}>Large</button>
+    </div>
+  )
 }
 
 export default Score

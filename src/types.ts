@@ -32,6 +32,7 @@ export interface ShipPhysicsData {
   turnSpeed: number
   mass: number
   size: Size
+  centerOffset: number
 }
 
 export interface Position {

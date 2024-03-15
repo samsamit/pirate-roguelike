@@ -1,7 +1,9 @@
 import { Scene } from "phaser"
 import { preloadShipSprites } from "../util/parseShipSprites"
 import { playerStore } from "../store/player.store"
-import Score from "../components/shipCustomization/ShipCustomization"
+import Score, {
+  IScore,
+} from "../components/shipCustomization/ShipCustomization"
 import Player from "../objects/player.model"
 import EnemyHandler from "../objects/enemyHandler.model"
 
@@ -16,8 +18,6 @@ class MainScene extends Scene {
   private declare cursors: WasdKeys
   private declare background: Phaser.GameObjects.TileSprite
   private declare enemyHandler: EnemyHandler
-
-  private temp = false
 
   preload() {
     this.load.image("sea", "assets/seafloor.png")
@@ -37,12 +37,11 @@ class MainScene extends Scene {
     this.cursors = this.input.keyboard!.addKeys("W,S,A,D") as WasdKeys
 
     this.add.reactDom(Score, {
-      onClick: () => {
-        playerStore.updateShip({ size: !this.temp ? "large" : "small" })
-        this.temp = !this.temp
+      onClick: (size) => {
+        playerStore.updateShip({ size })
         console.log("Click")
       },
-    })
+    } satisfies IScore)
   }
 
   update(time: number, delta: number) {
