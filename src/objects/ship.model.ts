@@ -1,5 +1,11 @@
 import { ShipData } from "../store/player.store"
-import { Position, PositionWithAngle, ShipPhysicsData, Size } from "../types"
+import {
+  Position,
+  PositionWithAngle,
+  ShipPhysicsData,
+  Side,
+  Size,
+} from "../types"
 import { largeShip, mediumShip, smallShip } from "../util/parseShipSprites"
 import Cannon from "./cannon.model"
 import CannonContainer from "./cannonContainer.model"
@@ -29,6 +35,10 @@ class Ship {
         new Cannon(scene, { x: 0, y: 0 }, shipName, "left"),
         new Cannon(scene, { x: 0, y: 0 }, shipName, "left"),
         new Cannon(scene, { x: 0, y: 0 }, shipName, "left"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName, "left"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName, "right"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName, "right"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName, "right"),
         new Cannon(scene, { x: 0, y: 0 }, shipName, "right"),
         new Cannon(scene, { x: 0, y: 0 }, shipName, "right"),
       ]
@@ -49,8 +59,14 @@ class Ship {
     )
   }
 
-  shoot() {
-    this.cannons.forEach((c) => c.shoot(this.position))
+  shoot(side: Side) {
+    const cannonsToShoot = this.cannons.filter(
+      (c) => c.side === side && !c.onCooldown
+    )
+    if (cannonsToShoot.length === 0) return
+    const randomCannonIndex = Math.floor(Math.random() * cannonsToShoot.length)
+    const randomCannon = cannonsToShoot[randomCannonIndex]
+    randomCannon.shoot(this.position)
   }
 
   destroy() {

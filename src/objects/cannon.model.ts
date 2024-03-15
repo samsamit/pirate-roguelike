@@ -5,6 +5,8 @@ import Projectile from "./projectile.model"
 class Cannon extends Phaser.GameObjects.Sprite {
   private animKey: string
   public side: Side = "left"
+  private cooldown = 1000
+  private lastShot = 0
   constructor(
     scene: Phaser.Scene,
     { x, y }: Position,
@@ -30,11 +32,17 @@ class Cannon extends Phaser.GameObjects.Sprite {
     super.preUpdate(time, delta)
   }
 
+  get onCooldown() {
+    return this.scene.time.now - this.lastShot < this.cooldown
+  }
+
   destroy(fromScene?: boolean | undefined): void {
     super.destroy(fromScene)
   }
 
   shoot(shipPositionWithAngle: PositionWithAngle) {
+    if (this.scene.time.now - this.lastShot < this.cooldown) return
+    this.lastShot = this.scene.time.now
     const offset = this.side === "left" ? -1 : 1
     const adjustedAngle = Phaser.Math.DegToRad(shipPositionWithAngle.angle)
 
@@ -54,9 +62,6 @@ class Cannon extends Phaser.GameObjects.Sprite {
     // Calculate the angle of the cannon
     const cannonAngle = shipPositionWithAngle.angle + 90 * offset
 
-    console.log("Cannon Position:", rotatedRawPosX, rotatedRawPosY)
-    console.log("Cannon Angle:", cannonAngle)
-
     // Create and launch the projectile
     new Projectile(
       this.scene,
@@ -68,7 +73,6 @@ class Cannon extends Phaser.GameObjects.Sprite {
     )
 
     // Trigger animation
-    console.log("anim")
     this.play(this.animKey)
   }
 }

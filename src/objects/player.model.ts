@@ -8,6 +8,8 @@ class Player {
   private ship: Ship
   private scene: Phaser.Scene
 
+  lastShot = 0
+
   constructor(scene: Phaser.Scene) {
     this.scene = scene
     this.ship = new Ship(
@@ -27,7 +29,37 @@ class Player {
   }
 
   handleMouseClick(pointer: Phaser.Input.Pointer) {
-    this.ship.shoot()
+    // Get the ship's position
+    const shipPosition = new Phaser.Math.Vector2(
+      this.ship.position.position.x,
+      this.ship.position.position.y
+    )
+    const shipAngleInRad = Phaser.Math.DegToRad(this.ship.position.angle + 90)
+
+    // Get the cursor position
+    const cursorPosition = new Phaser.Math.Vector2(
+      pointer.worldX,
+      pointer.worldY
+    )
+
+    // Get the direction vector from the ship to the cursor
+    const directionVector = cursorPosition.subtract(shipPosition).normalize()
+
+    // Get the ship's forward vector based on its rotation
+    const shipForwardVector = new Phaser.Math.Vector2(
+      Math.cos(shipAngleInRad),
+      Math.sin(shipAngleInRad)
+    )
+
+    // Calculate the dot product of the ship's forward vector and the direction vector to determine the side
+    const dotProduct = shipForwardVector.dot(directionVector)
+
+    // Determine if the click is on the left or right side based on the dot product
+    if (dotProduct >= 0) {
+      this.ship.shoot("right")
+    } else {
+      this.ship.shoot("left")
+    }
   }
 
   update(background: Phaser.GameObjects.TileSprite, controls: WasdKeys) {
