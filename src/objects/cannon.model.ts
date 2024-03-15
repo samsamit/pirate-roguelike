@@ -14,7 +14,7 @@ class Cannon extends Phaser.GameObjects.Sprite {
     side: Side
   ) {
     super(scene, x, y, smallCannon.key, 0)
-    this.animKey = shipName + "_cannon_anim"
+    this.animKey = shipName + "_cannon_anim_"
     this.side = side
     scene.anims.create({
       key: this.animKey,

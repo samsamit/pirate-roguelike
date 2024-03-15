@@ -27,6 +27,7 @@ class Enemy {
   update(playerPosition: PositionWithAngle) {
     if (this.ship.health < 0) {
       this.ship.destroy()
+      this.marker.destroy()
       this.isDestroyed = true
       return
     }

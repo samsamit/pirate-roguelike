@@ -31,16 +31,16 @@ class Ship {
   ) {
     this.cannons.push(
       ...[
-        new Cannon(scene, { x: 0, y: 0 }, shipName, "left"),
-        new Cannon(scene, { x: 0, y: 0 }, shipName, "left"),
-        new Cannon(scene, { x: 0, y: 0 }, shipName, "left"),
-        new Cannon(scene, { x: 0, y: 0 }, shipName, "left"),
-        new Cannon(scene, { x: 0, y: 0 }, shipName, "left"),
-        new Cannon(scene, { x: 0, y: 0 }, shipName, "right"),
-        new Cannon(scene, { x: 0, y: 0 }, shipName, "right"),
-        new Cannon(scene, { x: 0, y: 0 }, shipName, "right"),
-        new Cannon(scene, { x: 0, y: 0 }, shipName, "right"),
-        new Cannon(scene, { x: 0, y: 0 }, shipName, "right"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName + 0, "left"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName + 1, "left"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName + 2, "left"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName + 3, "left"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName + 4, "left"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName + 5, "right"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName + 6, "right"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName + 7, "right"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName + 8, "right"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName + 9, "right"),
       ]
     )
     this.texture = new ShipTexture(scene, shipName)
