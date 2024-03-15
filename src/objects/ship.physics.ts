@@ -88,8 +88,6 @@ class ShipPhysics extends Phaser.Physics.Matter.Sprite {
       -this.turnSpeed,
       this.turnSpeed
     )
-
-    if (this.shipName === "0enemy") console.log(angularVelocity)
     // Apply angular velocity
     this.setAngularVelocity(angularVelocity)
 

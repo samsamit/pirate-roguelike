@@ -1,4 +1,4 @@
-import { PositionWithAngle, Side } from "../types"
+import { Position, PositionWithAngle, Side } from "../types"
 import Ship from "./ship.model"
 
 class Enemy {
@@ -8,8 +8,10 @@ class Enemy {
   private circleDistance: number // Set distance for circling
   private maxDistanceFromPlayer = 5000
   public isDestroyed: boolean = false
+  private marker: Phaser.GameObjects.Graphics
 
   constructor(
+    private scene: Phaser.Scene,
     ship: Ship,
     attackRange: number,
     hostileRange: number,
@@ -19,6 +21,7 @@ class Enemy {
     this.attackRange = attackRange
     this.hostileRange = hostileRange
     this.circleDistance = circleDistance
+    this.marker = scene.add.graphics()
   }
 
   update(playerPosition: PositionWithAngle) {
@@ -42,6 +45,9 @@ class Enemy {
       playerPosition.position.x,
       playerPosition.position.y
     )
+
+    this.drawMarker(playerPosition.position)
+
     if (distance >= this.maxDistanceFromPlayer) {
       this.ship.destroy()
       this.isDestroyed = true
@@ -122,6 +128,50 @@ class Enemy {
 
     // Player is within both shooting range and angle
     return null
+  }
+
+  drawMarker(playerPosition: Position) {
+    // Clear previous marker
+    this.marker.clear()
+
+    // Set line style
+    this.marker.fillStyle(0xff0000)
+
+    const canvasWidth = this.scene.sys.canvas.width
+    const canvasHeight = this.scene.sys.canvas.height
+    const leftX = this.scene.cameras.main.scrollX
+    const topY = this.scene.cameras.main.scrollY
+    const rightX = this.scene.cameras.main.scrollX + canvasWidth
+    const bottomY = this.scene.cameras.main.scrollY + canvasHeight
+
+    const {
+      position: { x: thisX, y: thisY },
+    } = this.ship.position
+
+    const line = new Phaser.Geom.Line(
+      thisX,
+      thisY,
+      playerPosition.x,
+      playerPosition.y
+    )
+
+    const top = new Phaser.Geom.Line(leftX, topY, rightX, topY)
+    const right = new Phaser.Geom.Line(rightX, topY, rightX, bottomY)
+    const bottom = new Phaser.Geom.Line(leftX, bottomY, rightX, bottomY)
+    const left = new Phaser.Geom.Line(leftX, topY, leftX, bottomY)
+
+    const intersect = new Phaser.Math.Vector3()
+    if (
+      !Phaser.Geom.Intersects.LineToLine(line, top, intersect) &&
+      !Phaser.Geom.Intersects.LineToLine(line, right, intersect) &&
+      !Phaser.Geom.Intersects.LineToLine(line, bottom, intersect) &&
+      !Phaser.Geom.Intersects.LineToLine(line, left, intersect)
+    )
+      return
+    const { x, y } = intersect
+
+    // Draw circle at the calculated position
+    this.marker.fillCircle(x, y, 10) // Adjust the radius as needed
   }
 }
 

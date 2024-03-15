@@ -27,7 +27,6 @@ class EnemyHandler {
       this.enemies.push(this.getEnemy(playerPosition.position))
       this.lastSpawnTime = time
       this.nextSpawnTime = this.getRandomSpawnInterval()
-      console.log("Enemy spawned")
     }
 
     this.enemies.forEach((e) => {
@@ -46,7 +45,7 @@ class EnemyHandler {
       sailColor: "grey",
       size: "medium",
     })
-    return new Enemy(ship, 800, 500, 300)
+    return new Enemy(this.scene, ship, 800, 500, 300)
   }
 
   getRandomSpawnInterval(): number {

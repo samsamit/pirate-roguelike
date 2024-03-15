@@ -23,6 +23,5 @@ export const playerStore = makeAutoObservable<PlayerStore>({
   },
   updateShip(shipData) {
     this.ship = { ...this.ship, ...shipData }
-    console.log("Ship updated", this.ship)
   },
 })

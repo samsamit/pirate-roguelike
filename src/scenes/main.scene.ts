@@ -39,7 +39,6 @@ class MainScene extends Scene {
     this.add.reactDom(Score, {
       onClick: (size) => {
         playerStore.updateShip({ size })
-        console.log("Click")
       },
     } satisfies IScore)
   }
