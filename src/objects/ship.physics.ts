@@ -29,6 +29,13 @@ class ShipPhysics extends Phaser.Physics.Matter.Sprite {
     scene.add.existing(this)
   }
 
+  get size(): Size {
+    return {
+      height: this.height,
+      width: this.width,
+    }
+  }
+
   updateBody({ size, acceleration, mass, turnSpeed }: ShipPhysicsData) {
     // Store the current position
     const currentX = this.x

@@ -20,7 +20,10 @@ class EnemyHandler {
 
   update(time: number, playerPosition: PositionWithAngle) {
     if (this.lastSpawnTime === 0) this.lastSpawnTime = time
-    if (time - this.lastSpawnTime > this.nextSpawnTime) {
+    if (
+      time - this.lastSpawnTime > this.nextSpawnTime &&
+      this.enemies.length < 3
+    ) {
       this.enemies.push(this.getEnemy(playerPosition.position))
       this.lastSpawnTime = time
       this.nextSpawnTime = this.getRandomSpawnInterval()

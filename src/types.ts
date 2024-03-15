@@ -39,6 +39,8 @@ export interface Position {
   y: number
 }
 
+export type Side = "left" | "right"
+
 export interface PositionWithAngle {
   position: Position
   angle: number

@@ -2,6 +2,7 @@ import { ShipData } from "../store/player.store"
 import { Position, PositionWithAngle, ShipPhysicsData, Size } from "../types"
 import { largeShip, mediumShip, smallShip } from "../util/parseShipSprites"
 import Cannon from "./cannon.model"
+import CannonContainer from "./cannonContainer.model"
 import ShipPhysics, { ShipControl } from "./ship.physics"
 import ShipTexture from "./ship.texture"
 
@@ -12,6 +13,7 @@ class Ship {
   private healthBar: Phaser.GameObjects.Graphics
   private isDestroyed = false
   private cannons: Cannon[] = []
+  private cannonContainer: CannonContainer
 
   //   private shipData: ShipData
 
@@ -21,7 +23,16 @@ class Ship {
     y: number,
     shipName: string // shipData: ShipData
   ) {
-    this.cannons.push(...[new Cannon(scene, { x: 0, y: 0 }, shipName)])
+    this.cannons.push(
+      ...[
+        new Cannon(scene, { x: 0, y: 0 }, shipName, "left"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName, "left"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName, "left"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName, "left"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName, "right"),
+        new Cannon(scene, { x: 0, y: 0 }, shipName, "right"),
+      ]
+    )
     this.texture = new ShipTexture(scene, shipName)
     this.physics = new ShipPhysics(
       scene,
@@ -31,6 +42,11 @@ class Ship {
       this.handleCollision.bind(this)
     )
     this.healthBar = scene.add.graphics()
+    this.cannonContainer = new CannonContainer(
+      scene,
+      this.position.position,
+      this.cannons
+    )
   }
 
   shoot() {
@@ -67,9 +83,7 @@ class Ship {
     if (this.isDestroyed) return
     this.physics.update(shipControl)
     this.updateHealthBar() // Assuming initial health is 100%
-    this.cannons[0].setScale(3)
-    this.cannons[0].setDepth(300)
-    this.cannons[0].setPosition(this.physics.x + 10, this.physics.y)
+    this.cannonContainer.update(this.position, this.physics.size)
   }
 
   updateShip(shipData: ShipData) {
