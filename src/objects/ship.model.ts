@@ -50,13 +50,14 @@ class Ship {
   }
 
   shoot() {
-    this.cannons.forEach((c) => c.shoot())
+    this.cannons.forEach((c) => c.shoot(this.position))
   }
 
   destroy() {
     this.texture.texture.destroy()
     this.physics.destroy()
     this.healthBar.destroy()
+    this.cannonContainer.destroy()
     this.isDestroyed = true
   }
 

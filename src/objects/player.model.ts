@@ -1,6 +1,5 @@
 import { autorun } from "mobx"
 import { playerStore } from "../store/player.store"
-import Projectile from "./projectile.model"
 import Ship from "./ship.model"
 import { ShipControl } from "./ship.physics"
 import { WasdKeys } from "../scenes/main.scene"
@@ -28,29 +27,7 @@ class Player {
   }
 
   handleMouseClick(pointer: Phaser.Input.Pointer) {
-    // Convert click coordinates to world coordinates
-    const worldX = pointer.worldX
-    const worldY = pointer.worldY
-
-    const { position } = this.ship.position
-    // Calculate the angle between the ship and the click position
-    const angleToPointer = Phaser.Math.Angle.Between(
-      position.x,
-      position.y,
-      worldX,
-      worldY
-    )
-    const shipLength = this.ship.size.width / 2 + 8
-    // Calculate the spawn position at a distance from the ship's center towards the angle
-    const spawnX = position.x + shipLength * Math.cos(angleToPointer)
-    const spawnY = position.y + shipLength * Math.sin(angleToPointer)
-
-    // Create a new projectile at the calculated spawn position and adjusted angle
     this.ship.shoot()
-    setTimeout(
-      () => new Projectile(this.scene, spawnX, spawnY, angleToPointer, 1, 5000),
-      200
-    )
   }
 
   update(background: Phaser.GameObjects.TileSprite, controls: WasdKeys) {

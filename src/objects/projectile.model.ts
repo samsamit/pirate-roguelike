@@ -11,7 +11,6 @@ class Projectile extends Phaser.Physics.Matter.Sprite {
     lifespan: number
   ) {
     super(scene.matter.world, x, y, "projectile")
-    this.setScale(1.5)
     this.setFrictionAir(0)
     this.setFixedRotation()
     this.setVelocityX(speed * Math.cos(angle))
@@ -20,13 +19,13 @@ class Projectile extends Phaser.Physics.Matter.Sprite {
     this.scene.add.existing(this)
     this.lifespan = lifespan
 
-    this.setCollisionCategory(2)
-    this.setCollidesWith([1])
-    this.setOnCollide(() => {
-      this.setActive(false)
-      this.setVisible(false)
-      this.world.remove(this.body, true)
-    })
+    // this.setCollisionCategory(2)
+    // this.setCollidesWith([1])
+    // this.setOnCollide(() => {
+    //   this.setActive(false)
+    //   this.setVisible(false)
+    //   this.world.remove(this.body, true)
+    // })
   }
 
   preUpdate(time: number, delta: number) {
