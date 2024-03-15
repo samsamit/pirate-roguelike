@@ -22,7 +22,7 @@ class EnemyHandler {
     if (this.lastSpawnTime === 0) this.lastSpawnTime = time
     if (
       time - this.lastSpawnTime > this.nextSpawnTime &&
-      this.enemies.length < 3
+      this.enemies.length < 1
     ) {
       this.enemies.push(this.getEnemy(playerPosition.position))
       this.lastSpawnTime = time
@@ -38,7 +38,7 @@ class EnemyHandler {
 
   getEnemy(playerPosition: Position) {
     const { x, y } = this.getEnemyPosition(playerPosition)
-    const ship = new Ship(this.scene, x, y, this.enemyCounter + "ememy")
+    const ship = new Ship(this.scene, x, y, this.enemyCounter + "enemy")
     this.enemyCounter = this.enemyCounter + 1
     ship.updateShip({
       color: "grey",

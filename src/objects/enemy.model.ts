@@ -1,4 +1,4 @@
-import { PositionWithAngle } from "../types"
+import { PositionWithAngle, Side } from "../types"
 import Ship from "./ship.model"
 
 class Enemy {
@@ -67,8 +67,11 @@ class Enemy {
 
       this.ship.update({
         targetAngleDeg: Phaser.Math.RadToDeg(angleToCircle), // Convert angle to degrees
-        targetSpeed: 1,
+        targetSpeed: 0.5,
       })
+      const shootSide = this.sootOnSide(distance, playerPosition)
+      if (!shootSide) return
+      this.ship.shoot(shootSide)
       return
     }
 
@@ -78,7 +81,6 @@ class Enemy {
         targetAngleDeg: Phaser.Math.RadToDeg(angleToPlayer),
         targetSpeed: 0.2,
       })
-      return
     }
 
     this.ship.update({
@@ -86,6 +88,51 @@ class Enemy {
       targetSpeed: 0,
     })
   }
+
+  sootOnSide(
+    distanceToPlayer: number,
+    { position }: PositionWithAngle
+  ): Side | null {
+    const distanceToShoot = 400
+    const angleTreshold = 25
+    // Check if player is within shooting range
+    if (distanceToPlayer > distanceToShoot) {
+      return null
+    }
+    // Calculate angle between player and enemy
+    const angleBetweenShips =
+      Math.atan2(
+        position.y - this.ship.position.position.y,
+        position.x - this.ship.position.position.x
+      ) *
+      (180 / Math.PI)
+
+    // Calculate relative angle of player ship to enemy ship
+    const relativeAngle = normalizeAngle(
+      this.ship.position.angle - angleBetweenShips
+    )
+
+    if (relativeAngle < -90 + angleTreshold && relativeAngle > -90) {
+      return "right"
+    }
+
+    if (relativeAngle > 90 - angleTreshold && relativeAngle < 90) {
+      return "left"
+    }
+
+    // Player is within both shooting range and angle
+    return null
+  }
+}
+
+function normalizeAngle(angle: number): number {
+  if (angle <= -180) {
+    angle += 360
+  }
+  if (angle > 180) {
+    angle -= 360
+  }
+  return angle
 }
 
 export default Enemy

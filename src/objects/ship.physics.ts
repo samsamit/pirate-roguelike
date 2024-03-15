@@ -65,7 +65,8 @@ class ShipPhysics extends Phaser.Physics.Matter.Sprite {
 
   update({ targetAngleDeg, targetSpeed }: ShipControl) {
     // Calculate acceleration based on the difference between target speed and current speed
-    const speedDifference = targetSpeed - this.body.speed
+    const speed = Boolean(this.body.speed) ? this.body.speed : 0
+    const speedDifference = targetSpeed - speed
     const acceleration = Phaser.Math.Clamp(
       speedDifference,
       0,
@@ -81,12 +82,14 @@ class ShipPhysics extends Phaser.Physics.Matter.Sprite {
       currentAngleDec,
       targetAngleDeg
     )
+
     const angularVelocity = Phaser.Math.Clamp(
       angleBetween * this.turnSpeed,
       -this.turnSpeed,
       this.turnSpeed
     )
 
+    if (this.shipName === "0enemy") console.log(angularVelocity)
     // Apply angular velocity
     this.setAngularVelocity(angularVelocity)
 
