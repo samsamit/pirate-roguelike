@@ -1,3 +1,8 @@
+import {
+  ENEMY_COLLISION_CATEGORY,
+  PROJECTILE_COLLISION_CATEGORY,
+  SHIP_COLLISION_CATEGORY,
+} from "../constants"
 import { GlobalAnimations } from "../util/animations"
 
 class Projectile extends Phaser.Physics.Matter.Sprite {
@@ -21,20 +26,14 @@ class Projectile extends Phaser.Physics.Matter.Sprite {
     this.scene.add.existing(this)
     this.lifespan = lifespan
 
-    this.setCollisionCategory(2)
-    this.setCollidesWith([1])
+    this.setCollisionCategory(PROJECTILE_COLLISION_CATEGORY)
+    this.setCollidesWith([SHIP_COLLISION_CATEGORY, ENEMY_COLLISION_CATEGORY])
     this.setOnCollide(() => {
-      this.play(GlobalAnimations.explosion)
-      this.once(
-        Phaser.Animations.Events.ANIMATION_COMPLETE_KEY +
-          GlobalAnimations.explosion,
-        () => {
-          this.setActive(false)
-          this.setVisible(false)
-          this.world.remove(this.body, true)
-          this.destroy()
-        }
-      )
+      this.play(GlobalAnimations.explosion).once("animationcomplete", () => {
+        this.setActive(false)
+        this.setVisible(false)
+        this.destroy()
+      })
     })
   }
 
@@ -45,14 +44,11 @@ class Projectile extends Phaser.Physics.Matter.Sprite {
 
     if (!this.isDestoying && this.lifespan <= 0) {
       this.isDestoying = true
-      this.play(GlobalAnimations.emptyExplosion)
-      this.once(
-        Phaser.Animations.Events.ANIMATION_COMPLETE_KEY +
-          GlobalAnimations.emptyExplosion,
+      this.play(GlobalAnimations.emptyExplosion).once(
+        "animationcomplete",
         () => {
           this.setActive(false)
           this.setVisible(false)
-          this.world.remove(this.body, true)
           this.destroy()
         }
       )

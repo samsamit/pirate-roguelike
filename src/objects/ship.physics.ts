@@ -1,3 +1,9 @@
+import {
+  ENEMY_COLLISION_CATEGORY,
+  PROJECTILE_COLLISION_CATEGORY,
+  SHIP_COLLISION_CATEGORY,
+  WRECK_COLLISION_CATEGORY,
+} from "../constants"
 import { ShipPhysicsData, Size } from "../types"
 
 export interface ShipControl {
@@ -17,6 +23,7 @@ class ShipPhysics extends Phaser.Physics.Matter.Sprite {
     scene: Phaser.Scene,
     x: number,
     y: number,
+    private isPlayer: boolean,
     private shipName: string,
     private collisionCallback: () => void
   ) {
@@ -26,6 +33,7 @@ class ShipPhysics extends Phaser.Physics.Matter.Sprite {
       frictionStatic: 0,
       mass: 100,
     })
+
     scene.add.existing(this)
   }
 
@@ -41,7 +49,8 @@ class ShipPhysics extends Phaser.Physics.Matter.Sprite {
     const currentX = this.x
     const currentY = this.y
     const currentAngle = this.angle
-    const currentVelocity = this.getAngularVelocity()
+    const currentAngularVelocity = this.getAngularVelocity()
+    const currentVelocity = this.getVelocity()
 
     //Update physics
     this.setBody({
@@ -58,9 +67,26 @@ class ShipPhysics extends Phaser.Physics.Matter.Sprite {
 
     // Update the position of the sprite
     this.setAngle(currentAngle)
-    this.setAngularVelocity(currentVelocity)
+    this.setAngularVelocity(currentAngularVelocity)
+    this.setVelocity(currentVelocity.x ?? 0, currentVelocity.y)
 
-    this.setOnCollide(this.collisionCallback)
+    // COLLISION
+    this.setCollisionCategory(
+      this.isPlayer ? SHIP_COLLISION_CATEGORY : ENEMY_COLLISION_CATEGORY
+    )
+    this.setCollidesWith([
+      ENEMY_COLLISION_CATEGORY,
+      SHIP_COLLISION_CATEGORY,
+      PROJECTILE_COLLISION_CATEGORY,
+      ...(this.isPlayer ? [WRECK_COLLISION_CATEGORY] : []),
+    ])
+    this.setOnCollide(
+      (event: Phaser.Types.Physics.Matter.MatterCollisionData) => {
+        const isWreck = event.bodyB.gameObject?.getData("isWreck")
+        if (isWreck) return
+        this.collisionCallback()
+      }
+    )
   }
 
   update({ targetAngleDeg, targetSpeed }: ShipControl) {

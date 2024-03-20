@@ -1,34 +1,36 @@
 import { ShipData } from "../store/player.store"
-import {
-  Position,
-  PositionWithAngle,
-  ShipPhysicsData,
-  Side,
-  Size,
-} from "../types"
-import { largeShip, mediumShip, smallShip } from "../util/parseShipSprites"
+import { Position, PositionWithAngle, Side, Size } from "../types"
+import { GlobalAnimations } from "../util/animations"
+import { getShipData } from "../util/shipData.functions"
 import Cannon from "./cannon.model"
 import CannonContainer from "./cannonContainer.model"
 import ShipPhysics, { ShipControl } from "./ship.physics"
 import ShipTexture from "./ship.texture"
+import Wreck from "./wreck.model"
 
 class Ship {
   private texture: ShipTexture
   public physics: ShipPhysics
-  public health: number = 100
+  private maxHealth: number
+  public health: number
   private healthBar: Phaser.GameObjects.Graphics
   private isDestroyed = false
   private cannons: Cannon[] = []
   private cannonContainer: CannonContainer
+  private shipData: ShipData | null = null
 
   //   private shipData: ShipData
 
   constructor(
-    scene: Phaser.Scene,
+    private scene: Phaser.Scene,
     x: number,
     y: number,
-    shipName: string // shipData: ShipData
+    shipName: string,
+    maxHealth: number,
+    isPlayer: boolean
   ) {
+    this.maxHealth = maxHealth
+    this.health = maxHealth
     this.cannons.push(
       ...[
         new Cannon(scene, { x: 0, y: 0 }, "left"),
@@ -48,6 +50,7 @@ class Ship {
       scene,
       x,
       y,
+      isPlayer,
       shipName,
       this.handleCollision.bind(this)
     )
@@ -71,14 +74,28 @@ class Ship {
 
   destroy() {
     this.texture.texture.destroy()
-    this.physics.destroy()
     this.healthBar.destroy()
     this.cannonContainer.destroy()
-    this.isDestroyed = true
+    this.physics.setCollisionCategory(0)
+    this.physics.setCollidesWith(0)
+    this.createWrek()
+    this.physics
+      .play(GlobalAnimations.explosion)
+      .once("animationcomplete", () => {
+        this.physics.destroy()
+        this.isDestroyed = true
+      })
   }
 
   handleCollision() {
-    this.health = this.health - 10
+    if (!this.shipData) return
+    const prevHealthPercent = this.health / this.maxHealth
+    const newHealth = this.health - 10
+    const newHealthPercent = newHealth / this.maxHealth
+    if (newHealthPercent <= 0.7 && prevHealthPercent > 0.7) {
+      this.updateShip(this.shipData, 1)
+    }
+    this.health = newHealth
   }
 
   get size(): Size {
@@ -103,14 +120,20 @@ class Ship {
     this.cannonContainer.update(this.position)
   }
 
-  updateShip(shipData: ShipData) {
-    const { baseTextureKey, physicsData } = this.getShipData(shipData)
-    this.texture.build(shipData, physicsData.size, baseTextureKey)
+  updateShip(shipData: ShipData, damage: 0 | 1 | 2 = 0) {
+    this.shipData = shipData
+    const { baseTextureKey, physicsData } = getShipData(shipData)
+    this.texture.build(shipData, physicsData.size, baseTextureKey, damage)
     this.physics.updateBody(physicsData)
     this.cannonContainer.updateCannons(
       physicsData.size,
       physicsData.centerOffset
     )
+  }
+
+  createWrek() {
+    if (!this.shipData) return
+    new Wreck(this.scene, this.position, this.shipData, 100)
   }
 
   updateHealthBar() {
@@ -143,56 +166,6 @@ class Ship {
     const width = Math.max(0, healthBarWidth * percentage)
     this.healthBar.fillStyle(colorGreen)
     this.healthBar.fillRect(x, y, width, healthBarHeight)
-  }
-
-  private getShipData(shipData: ShipData): {
-    physicsData: ShipPhysicsData
-    baseTextureKey: string
-  } {
-    switch (shipData.size) {
-      case "small":
-        return {
-          physicsData: {
-            acceleration: 0.003,
-            mass: 100,
-            turnSpeed: 0.01,
-            size: {
-              width: smallShip.frameConfig.frameWidth,
-              height: smallShip.frameConfig.frameHeight,
-            },
-            centerOffset: 5,
-          },
-          baseTextureKey: smallShip.key,
-        }
-      case "medium":
-        return {
-          physicsData: {
-            acceleration: 0.003,
-            mass: 100,
-            turnSpeed: 0.01,
-            size: {
-              width: mediumShip.frameConfig.frameWidth,
-              height: mediumShip.frameConfig.frameHeight,
-            },
-            centerOffset: 5,
-          },
-          baseTextureKey: mediumShip.key,
-        }
-      case "large":
-        return {
-          physicsData: {
-            acceleration: 0.003,
-            mass: 100,
-            turnSpeed: 0.01,
-            size: {
-              width: largeShip.frameConfig.frameWidth,
-              height: largeShip.frameConfig.frameHeight,
-            },
-            centerOffset: 15,
-          },
-          baseTextureKey: largeShip.key,
-        }
-    }
   }
 }
 

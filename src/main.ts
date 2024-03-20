@@ -3,12 +3,12 @@ import phaserReact from "phaser3-react"
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   parent: "game-canvas",
-  canvasStyle: `display: block; width: 100%; height: 100%;`,
+  // canvasStyle: `display: block; width: 100%; height: 100%;`,
   clearBeforeRender: true,
   physics: {
     default: "matter",
     matter: {
-      debug: false,
+      debug: true,
       enableSleeping: true,
       gravity: {
         x: 0,

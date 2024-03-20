@@ -5,7 +5,7 @@ export const smallShip = {
     frameWidth: 63,
     frameHeight: 32,
     startFrame: 0,
-    endFrame: 18,
+    endFrame: 17,
   },
 } as const satisfies Phaser.Types.Loader.FileTypes.SpriteSheetFileConfig
 
@@ -16,7 +16,7 @@ export const mediumShip = {
     frameWidth: 80,
     frameHeight: 44,
     startFrame: 0,
-    endFrame: 15,
+    endFrame: 17,
   },
 } as const satisfies Phaser.Types.Loader.FileTypes.SpriteSheetFileConfig
 
@@ -27,7 +27,7 @@ export const largeShip = {
     frameWidth: 128,
     frameHeight: 46,
     startFrame: 0,
-    endFrame: 15,
+    endFrame: 17,
   },
 } as const satisfies Phaser.Types.Loader.FileTypes.SpriteSheetFileConfig
 

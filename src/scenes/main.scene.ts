@@ -7,6 +7,7 @@ import Score, {
 import Player from "../objects/player.model"
 import EnemyHandler from "../objects/enemyHandler.model"
 import { initGlobalAnimations } from "../util/animations"
+import UiContainer from "../components/uiContainer"
 
 export type WasdKeys = {
   W: Phaser.Input.Keyboard.Key
@@ -38,11 +39,13 @@ class MainScene extends Scene {
 
     this.cursors = this.input.keyboard!.addKeys("W,S,A,D") as WasdKeys
 
-    this.add.reactDom(Score, {
-      onClick: (size) => {
-        playerStore.updateShip({ size })
-      },
-    } satisfies IScore)
+    // this.add.reactDom(Score, {
+    //   onClick: (size) => {
+    //     playerStore.updateShip({ size })
+    //   },
+    // } satisfies IScore)
+
+    this.add.reactDom(UiContainer)
   }
 
   update(time: number, delta: number) {

@@ -37,7 +37,14 @@ class EnemyHandler {
 
   getEnemy(playerPosition: Position) {
     const { x, y } = this.getEnemyPosition(playerPosition)
-    const ship = new Ship(this.scene, x, y, this.enemyCounter + "enemy")
+    const ship = new Ship(
+      this.scene,
+      x,
+      y,
+      this.enemyCounter + "enemy",
+      100,
+      false
+    )
     this.enemyCounter = this.enemyCounter + 1
     ship.updateShip({
       color: "grey",

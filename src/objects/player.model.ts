@@ -16,13 +16,14 @@ class Player {
       scene,
       scene.sys.canvas.width / 2,
       scene.sys.canvas.height / 2,
-      "player"
+      "player",
+      100,
+      true
     )
 
     // Initialize scene
     scene.cameras.main.startFollow(this.ship.physics)
     scene.input.on("pointerdown", this.handleMouseClick.bind(this), scene)
-
     autorun(() => {
       this.ship.updateShip(playerStore.ship)
     })
