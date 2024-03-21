@@ -1,5 +1,5 @@
 import { ShipData } from "../store/player.store"
-import { Position, PositionWithAngle, Side, Size } from "../types"
+import { Position, PositionWithAngle, ShipSize, Side, Size } from "../types"
 import { GlobalAnimations } from "../util/animations"
 import { getShipData } from "../util/shipData.functions"
 import Cannon from "./cannon.model"
@@ -14,6 +14,7 @@ class Ship {
   private maxHealth: number
   public health: number
   private healthBar: Phaser.GameObjects.Graphics
+  private healthBarText: Phaser.GameObjects.Text
   private isDestroyed = false
   private cannons: Cannon[] = []
   private cannonContainer: CannonContainer
@@ -41,6 +42,11 @@ class Ship {
       this.handleCollision.bind(this)
     )
     this.healthBar = scene.add.graphics()
+    this.healthBarText = scene.add.text(0, 0, "", {
+      fontSize: 10,
+      color: "black",
+      fontStyle: "bold",
+    })
     this.cannonContainer = new CannonContainer(scene, this.position.position)
   }
 
@@ -57,6 +63,7 @@ class Ship {
   destroy() {
     this.texture.texture.destroy()
     this.healthBar.destroy()
+    this.healthBarText.destroy()
     this.cannonContainer.destroy()
     this.physics.setCollisionCategory(0)
     this.physics.setCollidesWith(0)
@@ -131,12 +138,12 @@ class Ship {
   updateHealthBar() {
     const healthBarWidth = 100
     const healthBarHeight = 10
-    const colorGreen = 0x00ff00
-    const colorRed = 0xff0000
+    const colorGreen = 0x22c55e
+    const colorRed = 0xef4444
     const colorBlack = 0x000000
     const x = this.physics.x - healthBarWidth / 2
     const y = this.physics.y + 35
-    const percentage = this.health / 100
+    const percentage = this.health / this.maxHealth
 
     // Clear the existing graphics (if any)
     this.healthBar.clear()
@@ -158,6 +165,10 @@ class Ship {
     const width = Math.max(0, healthBarWidth * percentage)
     this.healthBar.fillStyle(colorGreen)
     this.healthBar.fillRect(x, y, width, healthBarHeight)
+
+    this.healthBarText.setOrigin(0.5, 0)
+    this.healthBarText.setText(this.health + " / " + this.maxHealth)
+    this.healthBarText.setPosition(x + healthBarWidth / 2, y - 1)
   }
 }
 
