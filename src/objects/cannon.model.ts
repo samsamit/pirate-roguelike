@@ -7,11 +7,9 @@ class Cannon extends Phaser.GameObjects.Sprite {
   public side: Side = "left"
   private cooldown = 1000
   private lastShot = 0
-  constructor(scene: Phaser.Scene, { x, y }: Position, side: Side) {
-    super(scene, x, y, smallCannon.key, 0)
+  constructor(scene: Phaser.Scene, side: Side) {
+    super(scene, 0, 0, smallCannon.key, 0)
     this.side = side
-
-    scene.add.existing(this)
   }
 
   protected preUpdate(time: number, delta: number): void {

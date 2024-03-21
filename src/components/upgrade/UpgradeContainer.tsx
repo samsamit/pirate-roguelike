@@ -17,9 +17,18 @@ const UpgradeContainer = observer(() => {
         gap: "8px",
       }}
     >
-      <span style={{ alignSelf: "center", justifySelf: "center" }}>
-        Gold: {playerStore.gold}
-      </span>
+      <div
+        style={{
+          alignSelf: "center",
+          justifySelf: "center",
+          padding: "8px",
+          backgroundColor: "#facc15",
+          borderRadius: "8px",
+          color: "black",
+        }}
+      >
+        Gold: ${playerStore.gold}
+      </div>
 
       <div style={{ display: "flex", gap: "16px" }}>
         <LevelInfo

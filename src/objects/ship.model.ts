@@ -31,20 +31,6 @@ class Ship {
   ) {
     this.maxHealth = maxHealth
     this.health = maxHealth
-    this.cannons.push(
-      ...[
-        new Cannon(scene, { x: 0, y: 0 }, "left"),
-        new Cannon(scene, { x: 0, y: 0 }, "left"),
-        new Cannon(scene, { x: 0, y: 0 }, "left"),
-        new Cannon(scene, { x: 0, y: 0 }, "left"),
-        new Cannon(scene, { x: 0, y: 0 }, "left"),
-        new Cannon(scene, { x: 0, y: 0 }, "right"),
-        new Cannon(scene, { x: 0, y: 0 }, "right"),
-        new Cannon(scene, { x: 0, y: 0 }, "right"),
-        new Cannon(scene, { x: 0, y: 0 }, "right"),
-        new Cannon(scene, { x: 0, y: 0 }, "right"),
-      ]
-    )
     this.texture = new ShipTexture(scene, shipName)
     this.physics = new ShipPhysics(
       scene,
@@ -55,11 +41,7 @@ class Ship {
       this.handleCollision.bind(this)
     )
     this.healthBar = scene.add.graphics()
-    this.cannonContainer = new CannonContainer(
-      scene,
-      this.position.position,
-      this.cannons
-    )
+    this.cannonContainer = new CannonContainer(scene, this.position.position)
   }
 
   shoot(side: Side) {
@@ -125,7 +107,16 @@ class Ship {
     const { baseTextureKey, physicsData } = getShipData(shipData)
     this.texture.build(shipData, physicsData.size, baseTextureKey, damage)
     this.physics.updateBody(physicsData)
+    const newCannons = Array.from(
+      { length: shipData.cannonCount / 2 },
+      (_, i) => i + 1
+    ).flatMap((_) => [
+      new Cannon(this.scene, "left"),
+      new Cannon(this.scene, "right"),
+    ])
+    this.cannons = newCannons
     this.cannonContainer.updateCannons(
+      newCannons,
       physicsData.size,
       physicsData.centerOffset
     )

@@ -6,12 +6,9 @@ import { WasdKeys } from "../scenes/main.scene"
 
 class Player {
   private ship: Ship
-  private scene: Phaser.Scene
-
   lastShot = 0
 
   constructor(scene: Phaser.Scene) {
-    this.scene = scene
     this.ship = new Ship(
       scene,
       scene.sys.canvas.width / 2,

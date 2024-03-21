@@ -25,7 +25,7 @@ const LevelInfo = (props: {
         style={{
           width: "100px",
           borderRadius: "4px",
-          backgroundColor: noMoney ? "#dc2626" : "#16a34a",
+          backgroundColor: noMoney ? "#4b5563" : "#16a34a",
           fontSize: "14px",
           lineHeight: 1,
           padding: "4px",
