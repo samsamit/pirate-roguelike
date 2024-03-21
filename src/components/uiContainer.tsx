@@ -1,5 +1,5 @@
 import React from "react"
-import Experience from "./experience"
+import UpgradeContainer from "./upgrade/UpgradeContainer"
 
 const UiContainer = () => {
   return (
@@ -9,10 +9,12 @@ const UiContainer = () => {
         inset: 0,
         border: "1px solid black",
         display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-end",
         pointerEvents: "none",
       }}
     >
-      <Experience />
+      <UpgradeContainer />
     </div>
   )
 }

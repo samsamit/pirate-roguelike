@@ -1,33 +1,95 @@
 import { makeAutoObservable } from "mobx"
 import { MastColor, SailColor, ShipColor, ShipSize } from "../types"
+import { upgradeMap } from "../components/upgrade/upgradeMap"
 
 export interface ShipData {
   size: ShipSize
   color: keyof typeof ShipColor
   mastColor: keyof typeof MastColor
   sailColor: keyof typeof SailColor
+  cannonCount: number
 }
-interface PlayerStoreActions {
-  addExperience: (amount: number) => void
-  updateShip: (shipData: Partial<ShipData>) => void
+
+interface Progression {
+  bodyLevel: number
+  sailLevel: number
+  hullLevel: number
+  cannonLevel: number
 }
-interface PlayerStore extends PlayerStoreActions {
-  experience: number
+
+interface PlayerStoreData {
+  progression: Progression
+  gold: number
   ship: ShipData
+}
+interface PlayerStore extends PlayerStoreData {
+  addGold: (amount: number) => void
+  levelUp: (stat: keyof Progression, cost: number) => void
+}
+
+const startProgression: Progression = {
+  bodyLevel: 0,
+  cannonLevel: 0,
+  hullLevel: 0,
+  sailLevel: 0,
+}
+const initialData: PlayerStoreData = {
+  progression: startProgression,
+  ship: getShipFromLevel(startProgression),
+  gold: 0,
 }
 
 export const playerStore = makeAutoObservable<PlayerStore>({
-  experience: 0,
-  ship: {
-    color: "wood",
-    mastColor: "wood",
-    sailColor: "white",
-    size: "small",
+  ...initialData,
+  addGold(amount) {
+    this.gold += amount
   },
-  addExperience(amount) {
-    this.experience += amount
-  },
-  updateShip(shipData) {
-    this.ship = { ...this.ship, ...shipData }
+  levelUp(stat, cost) {
+    const newProgression = updateProgression(stat, this.progression)
+    this.progression = newProgression
+    this.ship = getShipFromLevel(newProgression)
+    this.gold = this.gold - cost
+    console.log(this.progression)
   },
 })
+
+function getShipFromLevel(progression: Progression): ShipData {
+  return {
+    color: upgradeMap.Hull[progression.hullLevel].color,
+    mastColor: "wood",
+    sailColor: upgradeMap.Sail[progression.sailLevel].color,
+    size: upgradeMap.Ship[progression.bodyLevel].size,
+    cannonCount: upgradeMap.Cannon[progression.cannonLevel].cannonCount,
+  }
+}
+
+function updateProgression(
+  stat: keyof Progression,
+  prevProgression: Progression
+): Progression {
+  switch (stat) {
+    case "bodyLevel": {
+      return {
+        bodyLevel: prevProgression.bodyLevel + 1,
+        cannonLevel: 0,
+        hullLevel: 0,
+        sailLevel: 0,
+      }
+    }
+    case "cannonLevel":
+      return {
+        ...prevProgression,
+        cannonLevel: prevProgression.cannonLevel + 1,
+      }
+    case "hullLevel":
+      return {
+        ...prevProgression,
+        hullLevel: prevProgression.hullLevel + 1,
+      }
+    case "sailLevel":
+      return {
+        ...prevProgression,
+        sailLevel: prevProgression.sailLevel + 1,
+      }
+  }
+}

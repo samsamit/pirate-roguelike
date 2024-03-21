@@ -38,13 +38,6 @@ class MainScene extends Scene {
     this.enemyHandler = new EnemyHandler(this)
 
     this.cursors = this.input.keyboard!.addKeys("W,S,A,D") as WasdKeys
-
-    // this.add.reactDom(Score, {
-    //   onClick: (size) => {
-    //     playerStore.updateShip({ size })
-    //   },
-    // } satisfies IScore)
-
     this.add.reactDom(UiContainer)
   }
 

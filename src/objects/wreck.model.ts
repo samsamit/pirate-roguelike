@@ -25,7 +25,7 @@ class Wreck extends Phaser.Physics.Matter.Sprite {
 
     this.setOnCollide(() => {
       this.setCollidesWith([])
-      playerStore.addExperience(experience)
+      playerStore.addGold(experience)
       scene.tweens.add({
         targets: this,
         duration: 250, // Duration of the tween in milliseconds
