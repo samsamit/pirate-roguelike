@@ -14,7 +14,7 @@ export const getShipData = (
         physicsData: {
           acceleration: shipData.acceleration,
           mass: 100,
-          turnSpeed: 0.01,
+          turnSpeed: 0.008 + shipData.turnSpeedBoost,
           size: {
             width: smallShip.frameConfig.frameWidth,
             height: smallShip.frameConfig.frameHeight,
@@ -28,7 +28,7 @@ export const getShipData = (
         physicsData: {
           acceleration: shipData.acceleration,
           mass: 150,
-          turnSpeed: 0.005,
+          turnSpeed: 0.005 + shipData.turnSpeedBoost,
           size: {
             width: mediumShip.frameConfig.frameWidth,
             height: mediumShip.frameConfig.frameHeight,
@@ -42,7 +42,7 @@ export const getShipData = (
         physicsData: {
           acceleration: shipData.acceleration,
           mass: 200,
-          turnSpeed: 0.003,
+          turnSpeed: 0.003 + shipData.turnSpeedBoost,
           size: {
             width: largeShip.frameConfig.frameWidth,
             height: largeShip.frameConfig.frameHeight,

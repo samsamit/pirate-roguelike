@@ -89,16 +89,8 @@ class ShipPhysics extends Phaser.Physics.Matter.Sprite {
   update({ targetAngleDeg, targetSpeed }: ShipControl) {
     // Calculate acceleration based on the difference between target speed and current speed
     if (this.shipName === "player") console.log(this.body.speed)
-    const speed = Boolean(this.body.speed) ? this.body.speed : 0
-    const speedDifference = targetSpeed - speed
-    const acceleration = Phaser.Math.Clamp(
-      speedDifference,
-      0,
-      this.acceleration
-    )
 
     // Apply thrust based on acceleration
-
     this.thrust(targetSpeed === 0 ? 0 : this.acceleration)
 
     // Calculate normalized angular velocity based on angle difference

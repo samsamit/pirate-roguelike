@@ -12,6 +12,7 @@ export interface ShipData {
   //stats
   maxHealth: number
   acceleration: number
+  turnSpeedBoost: number
 }
 
 interface Progression {
@@ -75,6 +76,7 @@ function getShipFromLevel(progression: Progression): ShipData {
     cannonCount: upgradeMap.Cannon[progression.cannonLevel].cannonCount,
     maxHealth: newHealth(),
     acceleration: 0.002 + 0.0005 * progression.sailLevel,
+    turnSpeedBoost: 0 + 0.001 * progression.sailLevel,
   }
 }
 
