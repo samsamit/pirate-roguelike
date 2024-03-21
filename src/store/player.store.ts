@@ -36,7 +36,7 @@ const startProgression: Progression = {
 const initialData: PlayerStoreData = {
   progression: startProgression,
   ship: getShipFromLevel(startProgression),
-  gold: 0,
+  gold: 1000000,
 }
 
 export const playerStore = makeAutoObservable<PlayerStore>({
@@ -49,7 +49,6 @@ export const playerStore = makeAutoObservable<PlayerStore>({
     this.progression = newProgression
     this.ship = getShipFromLevel(newProgression)
     this.gold = this.gold - cost
-    console.log(this.progression)
   },
 })
 
@@ -71,7 +70,7 @@ function updateProgression(
     case "bodyLevel": {
       return {
         bodyLevel: prevProgression.bodyLevel + 1,
-        cannonLevel: 0,
+        cannonLevel: prevProgression.bodyLevel + 1,
         hullLevel: 0,
         sailLevel: 0,
       }

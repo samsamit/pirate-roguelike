@@ -6,10 +6,12 @@ const LevelInfo = (props: {
   currentLevel: number
   playerGold: number
   onUpgrade: (cost: number) => void
+  otherBlock?: boolean
 }) => {
+  const max = upgradeMap[props.stat].length - 1 === props.currentLevel
   const upgrade = upgradeMap[props.stat]
-  const nextCost = upgrade[props.currentLevel + 1].cost
-  const noMoney = props.playerGold < nextCost
+  const nextCost = max ? 0 : upgrade[props.currentLevel + 1].cost
+  const disabled = props.playerGold < nextCost || props.otherBlock || max
   return (
     <div
       style={{
@@ -25,15 +27,15 @@ const LevelInfo = (props: {
         style={{
           width: "100px",
           borderRadius: "4px",
-          backgroundColor: noMoney ? "#4b5563" : "#16a34a",
+          backgroundColor: disabled ? "#4b5563" : "#16a34a",
           fontSize: "14px",
           lineHeight: 1,
           padding: "4px",
         }}
-        disabled={noMoney}
+        disabled={disabled}
         onClick={() => props.onUpgrade(nextCost)}
       >
-        ${nextCost}
+        {max ? "MAX" : "$" + nextCost}
       </button>
     </div>
   )

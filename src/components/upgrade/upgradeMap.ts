@@ -66,6 +66,22 @@ export const upgradeMap = {
       cannonCount: 10,
       cost: 1000,
     },
+    {
+      cannonCount: 12,
+      cost: 1500,
+    },
+    {
+      cannonCount: 14,
+      cost: 2000,
+    },
+    {
+      cannonCount: 16,
+      cost: 3000,
+    },
+    {
+      cannonCount: 18,
+      cost: 5000,
+    },
   ] satisfies Array<CannonLevel>,
   Ship: [
     {

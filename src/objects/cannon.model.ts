@@ -1,4 +1,4 @@
-import { Position, PositionWithAngle, Side } from "../types"
+import { PositionWithAngle, Side } from "../types"
 import { GlobalAnimations } from "../util/animations"
 import { smallCannon } from "../util/parseShipSprites"
 import Projectile from "./projectile.model"

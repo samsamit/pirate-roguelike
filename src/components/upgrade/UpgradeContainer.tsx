@@ -42,6 +42,10 @@ const UpgradeContainer = observer(() => {
           currentLevel={playerStore.progression.cannonLevel}
           playerGold={playerStore.gold}
           stat="Cannon"
+          otherBlock={
+            playerStore.progression.cannonLevel - 1 >
+            Math.pow(playerStore.progression.bodyLevel + 1, 2)
+          }
         />
         <LevelInfo
           onUpgrade={(cost) => playerStore.levelUp("sailLevel", cost)}

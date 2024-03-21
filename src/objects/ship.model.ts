@@ -107,6 +107,7 @@ class Ship {
     const { baseTextureKey, physicsData } = getShipData(shipData)
     this.texture.build(shipData, physicsData.size, baseTextureKey, damage)
     this.physics.updateBody(physicsData)
+    this.cannons.forEach((c) => c.destroy())
     const newCannons = Array.from(
       { length: shipData.cannonCount / 2 },
       (_, i) => i + 1
