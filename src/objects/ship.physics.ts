@@ -27,12 +27,7 @@ class ShipPhysics extends Phaser.Physics.Matter.Sprite {
     private shipName: string,
     private collisionCallback: () => void
   ) {
-    super(scene.matter.world, x, y, shipName, undefined, {
-      friction: 0.1,
-      frictionAir: 0.001,
-      frictionStatic: 0,
-      mass: 100,
-    })
+    super(scene.matter.world, x, y, shipName, undefined)
 
     scene.add.existing(this)
   }
@@ -61,6 +56,8 @@ class ShipPhysics extends Phaser.Physics.Matter.Sprite {
     })
     this.setTexture(this.shipName)
 
+    this.setFriction(1, 0.008)
+    console.log(acceleration)
     this.acceleration = acceleration
     this.turnSpeed = turnSpeed
     this.setMass(mass)
@@ -91,6 +88,7 @@ class ShipPhysics extends Phaser.Physics.Matter.Sprite {
 
   update({ targetAngleDeg, targetSpeed }: ShipControl) {
     // Calculate acceleration based on the difference between target speed and current speed
+    if (this.shipName === "player") console.log(this.body.speed)
     const speed = Boolean(this.body.speed) ? this.body.speed : 0
     const speedDifference = targetSpeed - speed
     const acceleration = Phaser.Math.Clamp(
@@ -100,7 +98,8 @@ class ShipPhysics extends Phaser.Physics.Matter.Sprite {
     )
 
     // Apply thrust based on acceleration
-    this.thrust(acceleration)
+
+    this.thrust(targetSpeed === 0 ? 0 : this.acceleration)
 
     // Calculate normalized angular velocity based on angle difference
     const currentAngleDec = Phaser.Math.RadToDeg(this.body.angle)

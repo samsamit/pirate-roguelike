@@ -8,6 +8,10 @@ export interface ShipData {
   mastColor: keyof typeof MastColor
   sailColor: keyof typeof SailColor
   cannonCount: number
+
+  //stats
+  maxHealth: number
+  acceleration: number
 }
 
 interface Progression {
@@ -53,12 +57,24 @@ export const playerStore = makeAutoObservable<PlayerStore>({
 })
 
 function getShipFromLevel(progression: Progression): ShipData {
+  const newHealth = () => {
+    switch (upgradeMap.Ship[progression.bodyLevel].size) {
+      case "large":
+        return 1000
+      case "medium":
+        return 500
+      case "small":
+        return 100
+    }
+  }
   return {
     color: upgradeMap.Hull[progression.hullLevel].color,
     mastColor: "wood",
     sailColor: upgradeMap.Sail[progression.sailLevel].color,
     size: upgradeMap.Ship[progression.bodyLevel].size,
     cannonCount: upgradeMap.Cannon[progression.cannonLevel].cannonCount,
+    maxHealth: newHealth(),
+    acceleration: 0.002 + 0.0005 * progression.sailLevel,
   }
 }
 

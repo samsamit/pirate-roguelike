@@ -95,8 +95,6 @@ class Player {
       shipControl.targetSpeed = 1 // Move forward
     } else if (controls.S.isDown) {
       shipControl.targetSpeed = 0 // Stop
-    } else {
-      shipControl.targetSpeed = this.ship.physics.body.speed // Maintain current speed
     }
 
     return shipControl

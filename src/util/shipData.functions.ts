@@ -12,7 +12,7 @@ export const getShipData = (
     case "small":
       return {
         physicsData: {
-          acceleration: 0.003,
+          acceleration: shipData.acceleration,
           mass: 100,
           turnSpeed: 0.01,
           size: {
@@ -26,9 +26,9 @@ export const getShipData = (
     case "medium":
       return {
         physicsData: {
-          acceleration: 0.003,
-          mass: 100,
-          turnSpeed: 0.01,
+          acceleration: shipData.acceleration,
+          mass: 150,
+          turnSpeed: 0.005,
           size: {
             width: mediumShip.frameConfig.frameWidth,
             height: mediumShip.frameConfig.frameHeight,
@@ -40,9 +40,9 @@ export const getShipData = (
     case "large":
       return {
         physicsData: {
-          acceleration: 0.003,
-          mass: 100,
-          turnSpeed: 0.01,
+          acceleration: shipData.acceleration,
+          mass: 200,
+          turnSpeed: 0.003,
           size: {
             width: largeShip.frameConfig.frameWidth,
             height: largeShip.frameConfig.frameHeight,

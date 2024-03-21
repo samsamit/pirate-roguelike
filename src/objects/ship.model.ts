@@ -1,5 +1,5 @@
 import { ShipData } from "../store/player.store"
-import { Position, PositionWithAngle, ShipSize, Side, Size } from "../types"
+import { Position, PositionWithAngle, Side, Size } from "../types"
 import { GlobalAnimations } from "../util/animations"
 import { getShipData } from "../util/shipData.functions"
 import Cannon from "./cannon.model"
@@ -11,7 +11,6 @@ import Wreck from "./wreck.model"
 class Ship {
   private texture: ShipTexture
   public physics: ShipPhysics
-  private maxHealth: number
   public health: number
   private healthBar: Phaser.GameObjects.Graphics
   private healthBarText: Phaser.GameObjects.Text
@@ -30,7 +29,6 @@ class Ship {
     maxHealth: number,
     isPlayer: boolean
   ) {
-    this.maxHealth = maxHealth
     this.health = maxHealth
     this.texture = new ShipTexture(scene, shipName)
     this.physics = new ShipPhysics(
@@ -78,9 +76,9 @@ class Ship {
 
   handleCollision() {
     if (!this.shipData) return
-    const prevHealthPercent = this.health / this.maxHealth
+    const prevHealthPercent = this.health / this.shipData.maxHealth
     const newHealth = this.health - 10
-    const newHealthPercent = newHealth / this.maxHealth
+    const newHealthPercent = newHealth / this.shipData.maxHealth
     if (newHealthPercent <= 0.7 && prevHealthPercent > 0.7) {
       this.updateShip(this.shipData, 1)
     }
@@ -110,7 +108,10 @@ class Ship {
   }
 
   updateShip(shipData: ShipData, damage: 0 | 1 | 2 = 0) {
+    // update health
+    this.health = shipData.maxHealth
     this.shipData = shipData
+
     const { baseTextureKey, physicsData } = getShipData(shipData)
     this.texture.build(shipData, physicsData.size, baseTextureKey, damage)
     this.physics.updateBody(physicsData)
@@ -143,7 +144,7 @@ class Ship {
     const colorBlack = 0x000000
     const x = this.physics.x - healthBarWidth / 2
     const y = this.physics.y + 35
-    const percentage = this.health / this.maxHealth
+    const percentage = this.health / (this.shipData?.maxHealth ?? this.health)
 
     // Clear the existing graphics (if any)
     this.healthBar.clear()
@@ -167,7 +168,7 @@ class Ship {
     this.healthBar.fillRect(x, y, width, healthBarHeight)
 
     this.healthBarText.setOrigin(0.5, 0)
-    this.healthBarText.setText(this.health + " / " + this.maxHealth)
+    this.healthBarText.setText(this.health + " / " + this.shipData?.maxHealth)
     this.healthBarText.setPosition(x + healthBarWidth / 2, y - 1)
   }
 }
